@@ -15,7 +15,9 @@ Create necessary infra using cloudformation
     ```
 
 Setup github workflow to test your AWS connection
-> .github/workflows/testing-oidc.yml
+
+1. gh variable set IAM_ROLE --env development
+
 
 
 
