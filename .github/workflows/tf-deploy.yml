@@ -44,17 +44,17 @@ jobs:
       - name: Git clone the repository
         uses: actions/checkout@v4
 
+      - name: Print directory and List files
+        run: |
+          pwd
+          ls -lhrta
+
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ vars.IAM_ROLE }} #change to reflect your IAM role’s ARN
           role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: ${{ env.AWS_REGION }}
-
-      - name: Print directory and List files
-        run: |
-          pwd
-          ls -lhrta
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
