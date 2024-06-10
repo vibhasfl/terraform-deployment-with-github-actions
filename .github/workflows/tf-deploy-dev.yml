@@ -41,7 +41,6 @@ jobs:
 
       - name: Print directory and List files
         run: |
-          ${{ github.ref }}
           pwd
           ls -lhrta
 
