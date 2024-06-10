@@ -19,7 +19,7 @@ on:
 
 env:
   AWS_REGION: ap-south-1 #Change to reflect your Region
-  WORKING_DIRECTORY: ${{ github.ref == 'refs/heads/master' && 'environments/prod' || 'environments/dev' }}
+  WORKING_DIRECTORY: environments/dev
 
 # Permission can be added at job level or workflow level
 permissions:
@@ -30,12 +30,7 @@ permissions:
 jobs:
   TerraformPlan:
     runs-on: ubuntu-latest
-    environment: |-
-      ${{
-         github.ref == 'refs/heads/master' && 'production'
-      || github.ref == 'refs/heads/dev'    && 'development'
-      || 'staging'
-      }}
+    environment: development
     defaults:
       run:
         working-directory: ${{ env.WORKING_DIRECTORY }}
@@ -118,6 +113,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: development
     needs: TerraformPlan
+    if: github.ref == 'refs/heads/dev' && needs.TerraformPlan.outputs.tfplanExitCode == 2
     defaults:
       run:
         working-directory: ${{ env.WORKING_DIRECTORY }}
