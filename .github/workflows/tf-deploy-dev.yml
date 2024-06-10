@@ -84,11 +84,6 @@ jobs:
             exit 0
           fi
 
-      - name: Print ExitCode
-        run: |
-          echo "Output from job1: ${{ steps.tf-plan.outputs.exitcode }}"
-          printf '%s\n' "$exitcode" # This will output 'exitcode'
-
       # - name: Publish Terraform Plan
       #   uses: actions/upload-artifact@v4
       #   with:
