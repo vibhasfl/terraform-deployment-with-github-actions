@@ -78,11 +78,11 @@ jobs:
             exit 0
           fi
 
-      - name: Publish Terraform Plan
-        uses: actions/upload-artifact@v4
-        with:
-          name: tfplan
-          path: ${{ env.WORKING_DIRECTORY }}/tfplan
+      # - name: Publish Terraform Plan
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: tfplan
+      #     path: ${{ env.WORKING_DIRECTORY }}/tfplan
 
       # Create string output of Terraform Plan
       - name: Create String Output
@@ -106,3 +106,32 @@ jobs:
           SUMMARY: ${{ steps.tf-plan-string.outputs.summary }}
         run: |
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
+
+  TerraformApply:
+    runs-on: ubuntu-latest
+    environment: development
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v4
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.IAM_ROLE }} #change to reflect your IAM role’s ARN
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.8.5"
+
+      - name: Terraform Init
+        run: terraform init -backend-config=backend.conf
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
