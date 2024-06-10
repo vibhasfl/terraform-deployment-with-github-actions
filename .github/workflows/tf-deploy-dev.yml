@@ -43,7 +43,7 @@ jobs:
         run: |
           pwd
           ls -lhrta
-          export TF_LOG=TRACE
+          ${{ github.ref }}
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v4
