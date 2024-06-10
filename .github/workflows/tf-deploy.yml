@@ -19,7 +19,7 @@ on:
 
 env:
   AWS_REGION: ap-south-1 #Change to reflect your Region
-  WORKING_DIRECTORY: environments/dev
+  WORKING_DIRECTORY: ${{ github.ref == 'refs/heads/master' && 'environments/prod' || 'environments/dev' }}
 
 # Permission can be added at job level or workflow level
 permissions:
@@ -30,7 +30,12 @@ permissions:
 jobs:
   TerraformPlan:
     runs-on: ubuntu-latest
-    environment: development
+    environment: |-
+      ${{
+         github.ref_name == 'master' && 'production'
+      || github.ref_name == 'dev'    && 'development'
+      ||                                'staging'
+      }}
     defaults:
       run:
         working-directory: ${{ env.WORKING_DIRECTORY }}
@@ -46,8 +51,9 @@ jobs:
           role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: List files
+      - name: Print directory and List files
         run: |
+          pwd
           ls -lhrta
 
       - name: Setup Terraform
