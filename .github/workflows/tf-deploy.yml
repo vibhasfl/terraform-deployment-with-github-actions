@@ -25,6 +25,7 @@ env:
 permissions:
   id-token: write # This is required for requesting the JWT
   contents: read # This is required for actions/checkout
+  pull-requests: write
 
 jobs:
   TerraformPlan:
@@ -63,7 +64,7 @@ jobs:
         run: terraform init -backend-config=backend.conf
 
       - name: Terraform Plan
-        id: tfplan
+        id: tf-plan
         run: |
           export exitcode=0
           terraform plan -detailed-exitcode -no-color -out tfplan || export exitcode=$?
