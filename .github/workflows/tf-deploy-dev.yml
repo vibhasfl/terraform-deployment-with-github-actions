@@ -34,6 +34,8 @@ jobs:
     defaults:
       run:
         working-directory: ${{ env.WORKING_DIRECTORY }}
+    outputs:
+      tfplanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
 
     steps:
       - name: Git clone the repository
