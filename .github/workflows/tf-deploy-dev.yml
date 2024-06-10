@@ -73,6 +73,7 @@ jobs:
           terraform plan -detailed-exitcode -no-color -out tfplan || export exitcode=$?
 
           echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
+          echo "exitcode=$exitcode" >> $GITHUB_ENV
 
           if [ $exitcode -eq 1 ]; then
             echo Terraform Plan Failed!
@@ -84,6 +85,7 @@ jobs:
       - name: Print ExitCode
         run: |
           echo "Output from job1: ${{ steps.tf-plan.outputs.exitcode }}"
+          printf '%s\n' "$exitcode" # This will output 'exitcode'
 
       # - name: Publish Terraform Plan
       #   uses: actions/upload-artifact@v4
