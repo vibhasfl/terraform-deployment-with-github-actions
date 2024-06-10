@@ -110,6 +110,7 @@ jobs:
   TerraformApply:
     runs-on: ubuntu-latest
     environment: development
+    needs: TerraformPlan
     defaults:
       run:
         working-directory: ${{ env.WORKING_DIRECTORY }}
