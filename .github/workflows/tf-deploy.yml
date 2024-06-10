@@ -32,9 +32,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: |-
       ${{
-         github.ref_name == 'master' && 'production'
-      || github.ref_name == 'dev'    && 'development'
-      ||                                'staging'
+         github.ref == 'refs/heads/master' && 'production'
+      || github.ref == 'refs/heads/dev'    && 'development'
+      || 'staging'
       }}
     defaults:
       run:
