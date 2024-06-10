@@ -81,7 +81,7 @@ jobs:
             exit 0
           fi
 
-          echo "Value of GITHUB_OUTPUT" : ${{ GITHUB_OUTPUT }}"
+          echo "Value of GITHUB_OUTPUT : $exitcode"
 
       # - name: Publish Terraform Plan
       #   uses: actions/upload-artifact@v4
