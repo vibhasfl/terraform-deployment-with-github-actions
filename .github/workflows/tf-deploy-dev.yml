@@ -81,6 +81,8 @@ jobs:
             exit 0
           fi
 
+          echo "Value of GITHUB_OUTPUT : $GITHUB_OUTPUT"
+
       # - name: Publish Terraform Plan
       #   uses: actions/upload-artifact@v4
       #   with:
@@ -113,7 +115,7 @@ jobs:
   TerraformApply:
     runs-on: ubuntu-latest
     environment: development
-    needs: TerraformPlan
+    needs: [TerraformPlan]
     if: github.ref == 'refs/heads/dev' && needs.TerraformPlan.outputs.tfplanExitCode == 2
     defaults:
       run:
