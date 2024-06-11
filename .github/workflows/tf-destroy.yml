@@ -60,6 +60,10 @@ jobs:
       - name: Terraform Init
         run: terraform init -backend-config=backend.conf
 
+      - name: Load tfvars
+        run: |
+          aws ssm get-parameter --name '${{ vars.SSM_PATH }}' | jq -r '.Parameter.Value' > terraform.tfvars
+
       - name: Terraform Plan
         id: tf-plan
         run: |
@@ -133,6 +137,10 @@ jobs:
 
       - name: Terraform Init
         run: terraform init -backend-config=backend.conf
+
+      - name: Load tfvars
+        run: |
+          aws ssm get-parameter --name '${{ vars.SSM_PATH }}' | jq -r '.Parameter.Value' > terraform.tfvars
 
       - name: Terraform Apply
         run: terraform apply --destroy -auto-approve
