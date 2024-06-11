@@ -1,0 +1,14 @@
+[
+    {
+      "ParameterKey": "BucketName",
+      "ParameterValue": ""
+    },
+    {
+      "ParameterKey": "OidcArn",
+      "ParameterValue": ""
+    },
+    {
+      "ParameterKey": "TrustRepositoryUrl",
+      "ParameterValue": ""
+    }
+]

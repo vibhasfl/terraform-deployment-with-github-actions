@@ -1,0 +1,85 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: |
+  This template creates an s3 bucket to store terraform state
+
+Parameters:
+  BucketName:
+    Description: S3 bucket name
+    Type: String
+  OidcArn:
+    Description: ARN of OIDC provider
+    Type: String
+  TrustRepositoryUrl:
+    Type: String
+    Default: repo:$username/$reponame:ref:refs/heads/$branchname
+    Description: Repository URL than can use AWS
+
+Resources:
+  TerraformStateBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: "ExpireNoncurrentVersions"
+            Status: "Enabled"
+            NoncurrentVersionExpirationInDays: 30
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+
+  TerraformUserRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: "TerraformUserRole"
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Ref OidcArn
+            Action: 'sts:AssumeRoleWithWebIdentity'
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: "sts.amazonaws.com"
+              StringLike:
+                token.actions.githubusercontent.com:sub: !Ref TrustRepositoryUrl
+
+      Policies:
+        - PolicyName: TerraformStateManagementPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:GetObject'
+                  - 's3:PutObject'
+                  #- 's3:DeleteObject'
+                  - 's3:ListBucket'
+                Resource:
+                  - !Sub 'arn:aws:s3:::${TerraformStateBucket}'
+                  - !Sub 'arn:aws:s3:::${TerraformStateBucket}/*'
+              - Effect: Allow
+                Action:
+                  - 's3:ListAllMyBuckets'
+                Resource: '*'
+        - PolicyName: TerraformCreateNewBucket
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                 - s3:CreateBucket
+                 - s3:PutBucketPolicy
+                 - s3:PutAccountPublicAccessBlock
+                 - s3:DeleteBucketPolicy
+                 - s3:DeleteBucket
+                Resource: '*'
+                Condition:
+                  StringEquals:
+                    aws:ResourceTag/Name: bucket-created-via-terraform
+
