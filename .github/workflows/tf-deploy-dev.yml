@@ -66,6 +66,10 @@ jobs:
       - name: Terraform Init
         run: terraform init -backend-config=backend.conf
 
+      - name: Load tfvars
+        run: |
+          aws ssm get-parameter --name '${{ vars.SSM_PATH }}' | jq -r '.Parameter.Value' > terraform.tfvars
+
       - name: Terraform Plan
         id: tf-plan
         run: |
@@ -83,6 +87,11 @@ jobs:
           else 
             exit 0
           fi
+
+      - name: Print ExitCode
+        run: |
+          echo "Output from job1: ${{ steps.tf-plan.outputs.exitcode }}"
+          printf '%s\n' "$exitcode" # This will output 'exitcode'
 
       # - name: Publish Terraform Plan
       #   uses: actions/upload-artifact@v4
@@ -140,6 +149,10 @@ jobs:
 
       - name: Terraform Init
         run: terraform init -backend-config=backend.conf
+
+      - name: Load tfvars
+        run: |
+          aws ssm get-parameter --name '${{ vars.SSM_PATH }}' | jq -r '.Parameter.Value' > terraform.tfvars
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
