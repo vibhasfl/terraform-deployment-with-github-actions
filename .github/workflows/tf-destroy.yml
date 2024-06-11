@@ -1,12 +1,7 @@
-
 name: Terraform destroy
-
 
 on:
   workflow_dispatch:
-    branches:
-      - dev
-      - master
     inputs:
       environment:
         description: "Environment to run aganist"
@@ -23,7 +18,7 @@ permissions:
   pull-requests: write
 
 env:
-  AWS_REGION: ap-south-1 
+  AWS_REGION: ap-south-1
   WORKING_DIRECTORY: environments/dev
 
 jobs:
@@ -82,7 +77,6 @@ jobs:
           else 
             exit 0
           fi
-
 
       # Create string output of Terraform Plan
       - name: Create String Output
