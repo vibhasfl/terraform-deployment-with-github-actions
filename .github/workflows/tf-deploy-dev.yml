@@ -116,12 +116,12 @@ jobs:
         id: opa-tests
         run: |
           output=$(opa eval --data ../../tests/check-tags.rego --input tfplan.json "data.terraform.aws.common.deny" | jq '{deny: .result[0].expressions[0].value}')
-          echo "opa_output=$output" >> $GITHUB_ENV
           echo $output
-          $violations=$(echo $output | jq '.deny' | jq length)
+          echo $output > output.json
+          violations=$(echo $output | jq '.deny' | jq length)
+          echo 
           if [ "$violations" -gt 0 ]; then
             echo "OPA policy violations found"
-            cat $output
             exit 1
           else
             echo "No OPA policy violations found."
