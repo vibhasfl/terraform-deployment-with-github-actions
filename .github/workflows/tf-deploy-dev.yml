@@ -46,6 +46,9 @@ jobs:
           pwd
           ls -lhrta
 
+      - name: Setup JQ
+        uses: actions/install-jq-action
+
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
