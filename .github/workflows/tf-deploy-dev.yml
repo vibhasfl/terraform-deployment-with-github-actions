@@ -45,9 +45,12 @@ jobs:
         run: |
           pwd
           ls -lhrta
+          sudo apt-get update
+          sudo apt-get install -y jq
+          jq --version
 
-      - name: Setup JQ
-        uses: dcarbone/install-jq-action@v2.1.0
+      # - name: Setup JQ
+      #   uses: dcarbone/install-jq-action@v2.1.0
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v4
