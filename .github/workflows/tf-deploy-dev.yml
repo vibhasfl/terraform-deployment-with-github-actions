@@ -47,7 +47,7 @@ jobs:
           ls -lhrta
 
       - name: Setup JQ
-        uses: actions/install-jq-action
+        uses: dcarbone/install-jq-action@v2.1.0
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v4
