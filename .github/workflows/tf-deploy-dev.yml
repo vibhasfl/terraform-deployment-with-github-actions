@@ -118,10 +118,11 @@ jobs:
           output=$(opa eval --data ../../tests/check-tags.rego --input tfplan.json "data.terraform.aws.common.deny" | jq '{deny: .result[0].expressions[0].value}')
           echo $output
           echo $output > output.json
+          echo "OPA Violations: "$output"" >> $GITHUB_OUTPUT
           violations=$(echo $output | jq '.deny' | jq length)
           echo 
           if [ "$violations" -gt 0 ]; then
-            echo "OPA policy violations found"
+            echo "OPA policy violations found."
             exit 1
           else
             echo "No OPA policy violations found."
@@ -147,7 +148,9 @@ jobs:
       - name: Publish Terraform Plan to Task Summary
         env:
           SUMMARY: ${{ steps.tf-plan-string.outputs.summary }}
+          VIOLATION: ${{ steps.opa-tests.outputs.summary }}
         run: |
+          echo "$VIOLATION" >> $GITHUB_STEP_SUMMARY
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
 
   TerraformApply:
