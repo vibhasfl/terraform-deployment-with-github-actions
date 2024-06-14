@@ -120,12 +120,18 @@ jobs:
 
           deny_output=$(echo $output | jq -c '.deny')  
 
-          echo "deny_output=${deny_output}" >> $GITHUB_OUTPUT
+          # echo "deny_output=${deny_output}" >> $GITHUB_OUTPUT
 
           violations=$(echo $output | jq '.deny' | jq length)
 
           if [ "$violations" -gt 0 ]; then
+
             echo "OPA policy violations found."
+
+            echo "## OPA Tests Summary" >> $GITHUB_STEP_SUMMARY
+            echo "### Summary of policy violations:" >> $GITHUB_STEP_SUMMARY
+            echo "$deny_output" >> $GITHUB_STEP_SUMMARY
+
             exit 1
           else
             echo "No OPA policy violations found."
