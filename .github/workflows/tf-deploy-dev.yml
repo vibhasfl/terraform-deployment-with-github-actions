@@ -128,7 +128,7 @@ jobs:
 
             echo "OPA policy violations found."
 
-            echo "## OPA Tests Summary" >> $GITHUB_STEP_SUMMARY
+            echo "## OPA policy violations found." >> $GITHUB_STEP_SUMMARY
             echo "### Summary of policy violations:" >> $GITHUB_STEP_SUMMARY
             echo "$deny_output" >> $GITHUB_STEP_SUMMARY
 
@@ -157,9 +157,7 @@ jobs:
       - name: Publish Terraform Plan to Task Summary
         env:
           SUMMARY: ${{ steps.tf-plan-string.outputs.summary }}
-          VIOLATION: ${{ steps.opa-tests.outputs.summary }}
         run: |
-          echo "$VIOLATION" >> $GITHUB_STEP_SUMMARY
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
 
   TerraformApply:
