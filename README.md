@@ -25,10 +25,12 @@
 
    SSM_PATH : AWS SSM path where tfvars are stored
 
-#### Actions details:
+#### Workflow details:
 
 1. testing-oidc : This workflow would test wheather github is able to access AWS services
 
 2. tf-deploy-dev : This workflow will be used to deploy to dev environment
 
 3. tf-destroy : This workflow is used to destroy created infrastructure
+
+4. scan-with-trivy : Using Trivy to scan Infrastructure as Code
