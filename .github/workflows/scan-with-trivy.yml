@@ -1,9 +1,6 @@
 name: Trivy Scan
 
 on:
- push:
-   branches:
-     - dev
  pull_request:
  workflow_dispatch:
 
@@ -11,10 +8,6 @@ env:
   AWS_REGION: ap-south-1 # Change to reflect your Region
   WORKING_DIRECTORY: environments/dev
 
-permissions:
-  id-token: write 
-  contents: read
-  pull-requests: write  
 
 jobs:
   Checkout-And-Scan:
@@ -33,18 +26,6 @@ jobs:
           role-to-assume: ${{ vars.IAM_ROLE }} #change to reflect your IAM role’s ARN
           role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: ${{ env.AWS_REGION }}
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-            terraform_version: "1.8.5"
-
-      - name: Terraform Init
-        run: terraform init -backend-config=backend.conf
-
-      - name: Load tfvars
-        run: |
-          aws ssm get-parameter --name '${{ vars.SSM_PATH }}' | jq -r '.Parameter.Value' > terraform.tfvars
 
       - name: Run Trivy vulnerability scanner in IaC mode
         uses: aquasecurity/trivy-action@0.20.0
