@@ -45,6 +45,12 @@ jobs:
         run: |
           pwd
           ls -lhrta
+          sudo apt-get update
+          sudo apt-get install -y jq
+          jq --version
+
+      # - name: Setup JQ
+      #   uses: dcarbone/install-jq-action@v2.1.0
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -75,6 +81,8 @@ jobs:
         run: |
           export exitcode=0
           terraform plan -detailed-exitcode -no-color -out tfplan 
+          terraform show --json tfplan > tfplan.json
+
           export exitcode=$?
 
           printf '%s\n' "$exitcode" # This will output 'exitcode'
@@ -98,6 +106,36 @@ jobs:
       #   with:
       #     name: tfplan
       #     path: ${{ env.WORKING_DIRECTORY }}/tfplan
+
+      - name: Setup OPA
+        uses: open-policy-agent/setup-opa@v2
+        with:
+          version: latest
+
+      - name: Run OPA Tests
+        id: opa-tests
+        run: |
+          output=$(opa eval --data ../../tests/check-tags.rego --input tfplan.json "data.terraform.aws.common.deny" | jq '{deny: .result[0].expressions[0].value}')
+          echo $output
+
+          deny_output=$(echo $output | jq -c '.deny')  
+
+          # echo "deny_output=${deny_output}" >> $GITHUB_OUTPUT
+
+          violations=$(echo $output | jq '.deny' | jq length)
+
+          if [ "$violations" -gt 0 ]; then
+
+            echo "OPA policy violations found."
+
+            echo "## OPA policy violations found." >> $GITHUB_STEP_SUMMARY
+            echo "### Summary of policy violations:" >> $GITHUB_STEP_SUMMARY
+            echo "$deny_output" >> $GITHUB_STEP_SUMMARY
+
+            exit 1
+          else
+            echo "No OPA policy violations found."
+          fi
 
       # Create string output of Terraform Plan
       - name: Create String Output
