@@ -1,0 +1,40 @@
+name: Trivy Scan
+
+on:
+ push:
+   branches:
+     - dev
+ pull_request:
+ workflow_dispatch:
+
+env:
+  AWS_REGION: ap-south-1 # Change to reflect your Region
+  WORKING_DIRECTORY: environments/dev
+
+jobs:
+  Checkout-And-Scan:
+    runs-on: ubuntu-latest    
+    environment: development
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v4
+    
+      - name: Run Trivy vulnerability scanner in IaC mode
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          scan-type: 'config'
+          hide-progress: true
+          format: 'table'
+          output: 'trivy-results.sarif'
+          exit-code: '0'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+  
